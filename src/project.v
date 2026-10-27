@@ -29,7 +29,7 @@ module tt_um_example (
   .reset(rst_n),
   .up_down(ui_in[0]),
   .count(uio_out[3:0])
-  )
+  );
   
 endmodule
 
