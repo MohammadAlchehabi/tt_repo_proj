@@ -24,13 +24,16 @@ module tt_um_example (
   // List all unused inputs to prevent warnings
   wire _unused = &{ena, clk, rst_n, 1'b0};
 
+  // define a register for the count value
+  reg [3:0] count_val;
   up_down_counter inst1(
   .clk(clk),
   .reset(rst_n),
   .up_down(ui_in[0]),
-  .count(uio_out[3:0])
+  .count(count_val)
   );
   
+  assign uo_out[3:0] = count_val;
 endmodule
 
 module up_down_counter (
