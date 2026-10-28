@@ -33,7 +33,6 @@ module tt_um_example (
   .count(count_val)
   );
   
-  assign uo_out[3:0] = count_val;
 endmodule
 
 module up_down_counter (
