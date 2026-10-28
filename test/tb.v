@@ -57,13 +57,6 @@ module tb ();
         ena    = 1;
         rst_n  = 0;  // Assert active-low reset
 
-        // Monitor counter output
-        $display("Time(ns)  rst_n  Direction  Count");
-        $monitor("%0t        %b      %s        %0d",
-                 $time, rst_n,
-                 ui_in[0] ? "UP" : "DOWN",
-                 uo_out[3:0]);
-
         // ---------------------------------
         // TEST 1: Reset
         // ---------------------------------
