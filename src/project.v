@@ -28,7 +28,7 @@ module tt_um_example (
   wire [3:0] count_val;
   up_down_counter inst1(
   .clk(clk),
-  .reset(rst_n),
+  .reset(~rst_n),
   .up_down(ui_in[0]),
   .count(count_val)
   );

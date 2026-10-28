@@ -46,4 +46,107 @@ module tb ();
       .rst_n  (rst_n)     // not reset
   );
 
+   // Clock generation: 10 ns period
+    always #5 clk = ~clk;
+
+    initial begin
+        // Initialize inputs
+        clk    = 0;
+        ui_in  = 8'b00000000;
+        uio_in = 8'b00000000;
+        ena    = 1;
+        rst_n  = 0;  // Assert active-low reset
+
+        // Monitor counter output
+        $display("Time(ns)  rst_n  Direction  Count");
+        $monitor("%0t        %b      %s        %0d",
+                 $time, rst_n,
+                 ui_in[0] ? "UP" : "DOWN",
+                 uo_out[3:0]);
+
+        // ---------------------------------
+        // TEST 1: Reset
+        // ---------------------------------
+        #12;
+        if (uo_out[3:0] !== 4'd0)
+            $display("FAIL: Reset test");
+        else
+            $display("PASS: Reset test");
+
+        // Release reset
+        rst_n = 1;
+
+        // ---------------------------------
+        // TEST 2: Count UP
+        // Expected: 1, 2, 3, 4, 5
+        // ---------------------------------
+        ui_in[0] = 1;
+        repeat (5) @(posedge clk);
+        #1;
+        if (uo_out[3:0] !== 4'd5)
+            $display("FAIL: Count-up test, got %0d",
+                     uo_out[3:0]);
+        else
+            $display("PASS: Count-up test");
+
+        // ---------------------------------
+        // TEST 3: Count DOWN
+        // Expected: 4, 3, 2
+        // ---------------------------------
+        ui_in[0] = 0;
+        repeat (3) @(posedge clk);
+        #1;
+        if (uo_out[3:0] !== 4'd2)
+            $display("FAIL: Count-down test, got %0d",
+                     uo_out[3:0]);
+        else
+            $display("PASS: Count-down test");
+
+        // ---------------------------------
+        // TEST 4: Count-up rollover
+        // Count from 2 through 15 to 0
+        // ---------------------------------
+        ui_in[0] = 1;
+        repeat (14) @(posedge clk);
+        #1;
+        if (uo_out[3:0] !== 4'd0)
+            $display("FAIL: Up-rollover test, got %0d",
+                     uo_out[3:0]);
+        else
+            $display("PASS: Up-rollover test");
+
+        // ---------------------------------
+        // TEST 5: Count-down rollover
+        // 0 -> 15
+        // ---------------------------------
+        ui_in[0] = 0;
+        @(posedge clk);
+        #1;
+        if (uo_out[3:0] !== 4'd15)
+            $display("FAIL: Down-rollover test, got %0d",
+                     uo_out[3:0]);
+        else
+            $display("PASS: Down-rollover test");
+
+        // ---------------------------------
+        // TEST 6: Reset while counting
+        // ---------------------------------
+        #2;
+        rst_n = 0;
+        #1;
+        if (uo_out[3:0] !== 4'd0)
+            $display("FAIL: Asynchronous reset test");
+        else
+            $display("PASS: Asynchronous reset test");
+
+        #10;
+        rst_n = 1;
+
+        // Finish
+        #10;
+        $display("--------------------------------");
+        $display("Simulation completed.");
+        $finish;
+    end
+
 endmodule
